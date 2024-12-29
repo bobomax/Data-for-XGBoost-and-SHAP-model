@@ -56,31 +56,31 @@ set.seed(20241021)
 fit_rf_manual <- randomForest(
   WE ~ .,
   data = data_train,
-  mtry = 4,            # 调优后的变量数
+  mtry = 10,            # 调优后的变量数
   nodesize = 5,        # 最小节点样本数
   ntree = 500          # 树的数量
 )
 
 # 输出模型结果
 print(fit_rf_manual)
-# 定义调优参数网格，仅包含 mtry
+# Define the tuning parameter grid
 paramGrid <- expand.grid(
-  mtry = c(2, 4, 6, 8)  # 尝试的变量数
+  mtry = c(3, 4, 5, 6, 7, 8, 9, 10)  # Number of variables to consider at each split
 )
 
-# 训练随机森林模型
+# Train the Random Forest model
 set.seed(20241021)
 fit_rf_reg_tuned <- train(
-  WE ~ .,
+  WE ~ .,  # The formula for the model
   data = data_train,
-  method = "rf",
-  trControl = trainControl(method = "cv", number = 5),
-  tuneGrid = paramGrid,
-  metric = "RMSE",
-  verbose = FALSE
+  method = "rf",  # Use the randomForest method
+  trControl = trainControl(method = "cv", number = 5),  # 5-fold cross-validation
+  tuneGrid = paramGrid,  # Use the defined parameter grid
+  metric = "RMSE",  # Use RMSE as the performance metric
+  verbose = FALSE  # Suppress verbose output
 )
 
-# 输出调优后的模型结果
+# Output the tuned model results
 print(fit_rf_reg_tuned)
 
 
@@ -122,3 +122,4 @@ legend("topleft",
 testpred <- predict(fit_rf_reg_tuned, newdata = data_test)
 # 测试集预测误差指标
 defaultSummary(data.frame(obs = data_test$WE, pred = testpred))
+
